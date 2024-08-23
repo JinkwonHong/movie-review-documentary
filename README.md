@@ -1,7 +1,7 @@
 # 📽MovieReview🎞
 
 ## 🎬 프로젝트 소개
-영화 정보 및 리뷰 등을 공유하는 영화 관련 커뮤니티
+영화 정보 및 리뷰 등을 공유하는 영화 관련 커뮤니티 개발 프로젝트
 
 ## ⚙ 사용 개발 환경
 |           |                                                             Tool & Version                                                             |
@@ -23,22 +23,22 @@
 
 ## 🕹 주요 기능
 #### 1. 인기 검색어 기능 (`/api/버전/keywords`)
-- QueryDSL을 사용한 1시간, 24시간을 기준으로 `between` 구문을 사용하여 keyword 테이블에서 해당 조건에 맞는 keyword를 반환하는 API
+- QueryDSL 활용 1시간, 24시간을 기준으로 `Between` 구문을 사용하여 Keyword 테이블에서 해당 조건에 맞는 keyword를 반환하는 API
   - 최근 1시간 인기 검색어 조회 기능 (`/api/버전/keywords/last-hour`)
-  - 최근 하루(24시간) 인기 검색어 조회 기능 (`/api/버전/keywords/last-day`)
+  - 최근 24시간 인기 검색어 조회 기능 (`/api/버전/keywords/last-day`)
 - 관련 Issue: [#2](https://github.com/imseongwoo/MovieReview/issues/2)
 - 관련 Pull Request: [#29](https://github.com/imseongwoo/MovieReview/pull/29)
 
 #### 2. 검색 기능 (`/api/버전/posts/search`)
-- Post 테이블 내의 title, content 컬럼을 기준으로 `LIKE` 구문을 사용하여 검색하는 API
-  - QueryDSL을 사용한 SQL 쿼리문에 `LIKE` 구문 포함
-- pageable을 통한 Paging 처리를 통해 검색 API 에서 결과를 페이지 단위로 조회
+- Post 테이블 내의 title, content Column 기준으로 `LIKE` 구문 사용 검색 API
+  - QueryDSL 사용 SQL 쿼리문에 `LIKE` 구문 포함
+- Pageable을 통한 Paging 처리를 통해 검색 API에 결과 페이지 단위로 조회
 - 관련 Issue: [#48](https://github.com/imseongwoo/MovieReview/issues/48)
 - 관련 Pull Request: [#51](https://github.com/imseongwoo/MovieReview/pull/51)
 
 #### 3. 캐싱 기능 적용
 (Version 1) 기본 검색 API
-- 캐시를 적용하지 않은 기본 검색 API
+- Cache를 적용하지 않은 기본 검색 API
 - `/api/v1/posts/search`
 - 관련 Issue: [#48](https://github.com/imseongwoo/MovieReview/issues/48)
 - 관련 Pull Request: [#51](https://github.com/imseongwoo/MovieReview/pull/51)
@@ -65,11 +65,13 @@
 
 ## 🧪 Redis Cache를 적용한 API 성능 테스트
 <details>
-  <summary><b>테스트 환경</summary>
-  CPU: Apple M1<br>
-  RAM: 16GB<br>
-  Database: Supabase<br>
-  테스트 도구: nGrinder<br>
+  <summary><b style="font-size: 14px;">테스트 환경</b></summary>
+  <div style="font-size: 12px;">
+    CPU: Apple M1<br>
+    RAM: 16GB<br>
+    Database: Supabase<br>
+    테스트 도구: nGrinder<br>
+  </div>
 </details>
 
 - 최근 1시간 인기 검색어 API
@@ -154,13 +156,32 @@
 
 ## 💾 캐시 적용 이유
 - In-Memory Cache(Local Memory Cache)
-  - 캐시된 데이터를 메모리에서 가져오기 때문에 응답 시간이 짧아진다
-  - 별도의 캐시 서버를 구축할 필요 없이 코드 내에서 어노테이션 사용으로 쉽게 구현할 수 있다
-  - 애플리케이션의 메모리를 사용하기 때문에 네트워크를 이용할 필요 없이 빠르게 데이터를 전송할 수 있다
-  - 같은 프로세스 내에서 데이터를 캐싱하기 때문에 데이터 일관성 문제에서 안정적이다
-  - 단일 서버나 소규모 프로젝트 같은 단일 인스턴스에선 로컬 메모리 캐시 활용이 효율적이다
+  - 캐시된 데이터를 메모리에서 가져오기 때문에 응답 시간 단축
+  - 별도의 캐시 서버를 구축할 필요 없이 코드 내에서 어노테이션 사용으로 쉽게 구현 가능
+  - 애플리케이션의 내부 메모리를 사용하기 때문에 네트워크를 이용할 필요 없이 빠르게 데이터 전송 가능
+  - 같은 프로세스 내에서 데이터를 캐싱하기 때문에 데이터 일관성 문제에서 안정적
+  - 단일 서버나 소규모 프로젝트 같은 단일 인스턴스에선 로컬 메모리 캐시 활용이 보다 효율적
 - Redis Cache
-  - 여러 서버에 데이터를 분산 저장할 수 있어 수평 확장(Scale-Out)이 가능하다
-  - 여러 애플리케이션이 하나의 Redis Cache 서버를 사용하여 다중 클라이언트 지원이 가능하다
-  - 데이터를 단순하게 키값으로 저장하는 것 이외의 리스트,셋 등 다양한 데이터 구조를 지원하여 효율적으로 데이터를 관리할 수 있다
-  - Memcached에 비해 Spring Redis에서 제공하는 API를 활용하여 손쉬운 구축이 가능하다
+  - 여러 서버에 데이터를 분산 저장할 수 있어 수평 확장(Scale-Out)이 가능
+  - 여러 애플리케이션이 하나의 Redis Cache 서버를 사용하여 다중 클라이언트 지원이 가능
+  - 데이터를 단순하게 키 값으로 저장하는 것 이외의 리스트,셋 등 다양한 데이터 구조를 지원하여 효율적으로 데이터 관리 가능
+  - Memcached에 비해 Spring Redis에서 제공하는 API를 활용하여 손쉬운 구축 가능
+
+## 📈 Caffeine Cache
+- Caffeine은 스프링 공식 라이브러리는 아니지만, 높은 신뢰도를 자랑하는 캐시 라이브러리
+  Github에서 14.1K 이상의 별점을 받고 있으며(2023.08.14. 기준), Java 8 이후로는 Spring Boot에서도 auto-configuration을 지원할 정도로 널리 사용
+
+#### Caffeine이 제공하는 주요 기능
+- 자동 로딩: 캐시에 항목을 자동으로 로딩하며, 선택적으로 비동기 로딩도 지원
+- 크기 기반 제거: 빈도와 최근 사용도를 기준으로 최대치를 초과할 경우 항목을 제거
+- 시간 기반 만료: 마지막 접근 또는 마지막 쓰기 이후로 경과된 시간에 따라 항목을 만료
+- 비동기 새로 고침: 항목에 대한 첫 번째 요청이 발생할 때, 비동기적으로 항목을 새로 고침 가능
+
+  
+기존의 Spring Cache를 사용하는 경우, 별도의 Config 설정 없이 기본적으로 ConcurrentMap을 이용해 In-Memory 캐시를 관리하게 되나 해당 방법의 경우 특정 기준에 따른 만료 등의 기능 구현의 어려움
+반면 Caffeine은 라이브러리의 추상화 덕분에 이러한 기능들을 간편하게 사용 가능
+
+#### 사용 이유
+- 프로젝트에서는 현재 읽기 기능에만 캐시를 적용
+  Caffeine은 초당 데이터 처리량 측면에서 매우 우수한 성능을 보여주며, 추가적인 기능이 필요 없는 상황에서 읽기 성능 최적화를 위해 가장 적절한 선택이라 판단하여 본 프로젝트에서는 Caffeine Cache를 사용하기로 결정
+  ![image](https://github.com/user-attachments/assets/b3643002-4f95-4b66-9bae-b82929110312)
